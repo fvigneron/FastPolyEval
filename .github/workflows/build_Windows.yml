@@ -1,0 +1,32 @@
+name: Windows Build
+
+on:
+#  push:
+#    branches: [ "main" ] 
+#  pull_request:
+#    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install MPFR library (through vcpkg)
+      # For an untested pre-build alternative, see : http://www.atelierweb.com/mpir-and-mpfr/
+      run: |
+        mkdir C:\src\vcpkg
+        cd C:\src\vcpkg
+        git clone https://github.com/microsoft/vcpkg
+        .\vcpkg\bootstrap-vcpkg.bat
+        .\vcpkg\vcpkg install mpfr
+    - name: Build default app
+      run: make fpe
+    - name: Build FP32, FP64, FP80 versions
+      run: make hardware
+    - name: List the binaries that where build
+      run: ls -l ./bin
+    - name: Basic test (dry run)
+      run: ./bin/FastPolyEval -help || true
+    - name: Cleanup
+      run: make clean

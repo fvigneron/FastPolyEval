@@ -1,0 +1,39 @@
+name: MacOS Build
+
+on:
+#  push:
+#    branches: [ "main" ] 
+#  pull_request:
+#    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install MPFR library (through MacPorts)
+      run: |
+        mkdir -p /usr/local/opt/mports
+        cd /usr/local/opt/mports
+        git clone https://github.com/macports/macports-base.git
+        cd macports-base
+        git checkout v2.7.2
+        cd /usr/local/opt/mports/macports-base
+        ./configure --enable-readline
+        make
+        sudo make install
+        make distclean
+        export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+        sudo port selfupdate
+        sudo port install gmp mpfr
+    - name: Build default app
+      run: make fpe
+    - name: Build FP32, FP64, FP80 versions
+      run: make hardware
+    - name: List the binaries that where build
+      run: ls -l ./bin
+    - name: Basic test (dry run)
+      run: ./bin/FastPolyEval -help || true
+    - name: Cleanup
+      run: make clean
