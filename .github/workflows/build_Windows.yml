@@ -22,10 +22,7 @@ jobs:
         .\vcpkg\vcpkg install mpfr
         dir C:\src\vcpkg\vcpkg\packages\
     - name: Build default app
-      run: make "GCC_LIBRARIES=-lm -L C:\src\vcpkg\vcpkg\packages\gmp_x64-windows\lib -L C:\src\vcpkg\vcpkg\packages\mpfr_x64-windows\lib -lgmp -lmpfr" fpe
-      working-directory: code
-    - name: Build FP32, FP64, FP80 versions
-      run: make "GCC_LIBRARIES=-lm -L C:\src\vcpkg\vcpkg\packages\gmp_x64-windows\lib -L C:\src\vcpkg\vcpkg\packages\mpfr_x64-windows\lib -lgmp -lmpfr" hardware
+      run: make "GCC_LIBRARIES=-lm -L C:\src\vcpkg\vcpkg\packages\gmp_x86-windows\lib -L C:\src\vcpkg\vcpkg\packages\mpfr_x86-windows\lib -lgmp -lmpfr" fpe
       working-directory: code
     - name: List the binaries that where build
       run: ls -l ./bin
