@@ -20,13 +20,15 @@ jobs:
         git clone https://github.com/microsoft/vcpkg
         .\vcpkg\bootstrap-vcpkg.bat
         .\vcpkg\vcpkg install mpfr
+        dir C:\src\vcpkg\vcpkg\packages\
     - name: Build default app
-      run: make fpe
+      run: make "GCC_LIBRARIES=-lm -L C:\src\vcpkg\vcpkg\packages\gmp_x64-windows\lib -L C:\src\vcpkg\vcpkg\packages\mpfr_x64-windows\lib -lgmp -lmpfr" fpe
+      working-directory: code
     - name: Build FP32, FP64, FP80 versions
-      run: make hardware
+      run: make "GCC_LIBRARIES=-lm -L C:\src\vcpkg\vcpkg\packages\gmp_x64-windows\lib -L C:\src\vcpkg\vcpkg\packages\mpfr_x64-windows\lib -lgmp -lmpfr" hardware
+      working-directory: code
     - name: List the binaries that where build
       run: ls -l ./bin
     - name: Basic test (dry run)
       run: ./bin/FastPolyEval -help || true
-    - name: Cleanup
-      run: make clean
+    
