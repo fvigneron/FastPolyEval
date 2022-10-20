@@ -23,16 +23,21 @@ jobs:
         ./configure --enable-readline
         make
         sudo make install
-        make distclean
+        sudo make distclean
         export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+        sudo port selfupdate
+        sudo port upgrade outdated
         sudo port install gmp mpfr
     - name: Build default app
       run: make fpe
+      working-directory: code
     - name: Build FP32, FP64, FP80 versions
       run: make hardware
+      working-directory: code
     - name: List the binaries that where build
       run: ls -l ./bin
     - name: Basic test (dry run)
       run: ./bin/FastPolyEval -help || true
     - name: Cleanup
       run: make clean
+      working-directory: code
