@@ -1,0 +1,30 @@
+name: Linux Build
+
+on:
+#  push:
+#    branches: [ "main" ] 
+#  pull_request:
+#    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install MPFR library
+      run: sudo apt-get install -y libmpfr-dev
+    - name: Build default app
+      run: make fpe
+      working-directory: code
+    - name: Build FP32, FP64, FP80 versions
+      run: make hardware
+      working-directory: code
+    - name: List the binaries that where build in the previous steps
+      run: ls -l ./bin
+    - name: Basic test (dry run)
+      run: ./FastPolyEval -help || true
+      working-directory: bin
+    - name: Cleanup
+      run: make clean
+      working-directory: code
