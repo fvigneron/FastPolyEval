@@ -18,7 +18,7 @@ jobs:
         cd /usr/local/opt/mports
         git clone https://github.com/macports/macports-base.git
         cd macports-base
-        git checkout v2.7.2
+        git checkout v2.8.0
         cd /usr/local/opt/mports/macports-base
         ./configure --enable-readline
         make
