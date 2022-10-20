@@ -1,0 +1,73 @@
+# Generate documentation with Doxygen / LaTeX
+# Push the PDF back to the repository & at the root of the HTML version
+# Deploy the HTML version to GitHub Pages (https://fvigneron.github.io/FastPolyEval/index.html)
+name: Documentation
+
+on:
+#  push:
+#    branches: ["main"]
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      # Configure the virtual machine
+      - name: Install Doxygen
+        run: sudo apt-get install -y doxygen
+      - name: Install Latex
+        run: sudo apt-get install -y texlive-latex-extra
+      - name: Checkout (download the current github repository to the virtual machine)
+        uses: actions/checkout@v3
+      # Build the documentation on the virtual machine
+      - name: Generate documentation
+        run: doxygen Doxyfile
+        working-directory: ./documentation
+      - name: Compile latex documentation
+        run: pdflatex refman.tex
+        working-directory: ./documentation/latex
+      - name: Compile latex documentation a second time (cross references)
+        run: pdflatex refman.tex
+        working-directory: ./documentation/latex
+      - name: Compile latex documentation a last time (cross references)
+        run: pdflatex refman.tex
+        working-directory: ./documentation/latex
+      - name: Move the PDF documentation to its proper place
+        run: |
+          cp ./latex/refman.pdf ./html/FastPolyEval_doc.pdf
+          mv ./latex/refman.pdf ./FastPolyEval_doc.pdf
+        working-directory: ./documentation
+      # Push the updated documentation back to the Github repository
+      - name: Push the PDF documentation back to Github
+        run: |
+          git config --global user.name "fvigneron"
+          git config --global user.email "59099621+fvigneron@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git add ./documentation/FastPolyEval_doc.pdf
+          git commit -m "Automated build of the PDF documention"
+          git push
+      # The next 3 steps publish the HTML documentation to the official website
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+      - name: Upload HTML documentation to https://fvigneron.github.io/FastPolyEval/
+        uses: actions/upload-pages-artifact@v1
+        with:
+          # source directory 
+          path: './documentation/html'
+      - name: Deploy HTML to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
