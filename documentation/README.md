@@ -1,4 +1,4 @@
-Documentation
+# Documentation
 
 This repository contains tools to regenerate the documentation automatically from the source code, using [Doxygen](https://doxygen.nl).
 
