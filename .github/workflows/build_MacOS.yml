@@ -25,7 +25,6 @@ jobs:
         sudo make install
         make distclean
         export PATH=/opt/local/bin:/opt/local/sbin:$PATH
-        sudo port selfupdate
         sudo port install gmp mpfr
     - name: Build default app
       run: make fpe
