@@ -1,17 +1,40 @@
-name: MacOS Build
+name: Build MacOS
 
 on:
 #  push:
 #    branches: [ "main" ] 
 #  pull_request:
 #    branches: [ "main" ]
+  # Called to create release.
+  workflow_call:
+    inputs:
+      config-path:
+        required: true
+        type: string
+    secrets:
+      token:
+        required: true
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: macos-latest
-    steps:
+  macos_build:
+    runs-on: ${{ matrix.platform.os }}-${{ matrix.platform.version }}
+    strategy:
+      matrix:
+        platform:
+          - os: macos
+            version: latest
+            arch: x86_64
+            triplet: x64-macos-release
+    steps: 
+    - uses: actions/labeler@v4
+      if: ${{ github.event_name == 'workflow_call' }}
+      with:
+        repo-token: ${{ secrets.token }}
+        configuration-path: ${{ inputs.config-path }}
+
     - uses: actions/checkout@v3
+
     - name: Install MPFR library (through MacPorts)
       run: |
         mkdir -p /usr/local/opt/mports
@@ -28,16 +51,27 @@ jobs:
         sudo port selfupdate
         sudo port upgrade outdated
         sudo port install gmp mpfr
+
     - name: Build default app
       run: make fpe
       working-directory: code
+
     - name: Build FP32, FP64, FP80 versions
       run: make hardware
       working-directory: code
+
     - name: List the binaries that where build
       run: ls -l ./bin
+
     - name: Basic test (dry run)
       run: ./bin/FastPolyEval -help || true
+
+    - name: Archive binaries
+      uses: actions/upload-artifact@v3
+      with:
+        name: FastPolyEval_${{ matrix.platform.arch }}_${{ matrix.platform.os }}
+        path: ./bin/FastPolyEval*
+
     - name: Cleanup
       run: make clean
       working-directory: code
