@@ -1,0 +1,75 @@
+name: Publish release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-rc[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-alpha[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-beta[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-a[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-b[0-9]+'
+
+jobs:
+  # Workflow call.
+  build_linux:
+    uses: ./.github/workflows/build_Linux.yml
+    with:
+      config-path: .github/labeler.yml
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+  # Workflow call.
+  build_macos:
+    uses: ./.github/workflows/build_MacOS.yml
+    with:
+      config-path: .github/labeler.yml
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+  # Workflow call.
+  build_windows:
+    uses: ./.github/workflows/build_Windows.yml
+    with:
+      config-path: .github/labeler.yml
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+
+  publish:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: [build_linux, build_macos, build_windows]
+    steps: 
+      - name: Download Linux artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: FastPolyEval_x86_64_linux
+          path: FastPolyEval_x86_64_linux
+
+      - name: Download MacOS artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: FastPolyEval_x86_64_macos
+          path: FastPolyEval_x86_64_macos
+
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: FastPolyEval_x86_64_windows
+          path: FastPolyEval_x86_64_windows
+
+      - name: Archive
+        run: |
+          zip -r FastPolyEval_x86_64_linux.zip FastPolyEval_x86_64_linux
+          zip -r FastPolyEval_x86_64_macos.zip FastPolyEval_x86_64_macos
+          zip -r FastPolyEval_x86_64_windows.zip FastPolyEval_x86_64_windows
+
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "FastPolyEval_x86_64_linux.zip,FastPolyEval_x86_64_macos.zip,FastPolyEval_x86_64_windows.zip"
+          body: >
+            [FastPolyEval](https://hal.archives-ouvertes.fr/hal-03820369) is a
+            library, written in C, that aims at evaluating polynomials very
+            efficiently, without compromising the accuracy of the result
+            ([documentation](https://fvigneron.github.io/FastPolyEval)).
+
+          generateReleaseNotes: true
+          token: ${{ secrets.GITHUB_TOKEN }}
