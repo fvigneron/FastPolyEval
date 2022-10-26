@@ -4,13 +4,16 @@
 #
 # =============================================
 
-# A disposable temporary directory, used for the build (created/deleted on demand).
-TMP_DIR=./hw_tmp
-
+# C compiler
+CC=gcc
 # Automatically find all source files *.c (assuming Makefile is at the root of the 'code' directory).
 # The content of TMP_DIR should be ignored.
 SOURCE_DIR=.
-SOURCE_FILES=$(shell find $(SOURCE_DIR) -path $(TMP_DIR) -prune -o -name '*.c' -print)
+SOURCE_FILES=tools/*.c apps/*.c eval/*.c numbers/*.c poly/*.c
+DIR_INCLUDE=-I ./tools -I ./apps -I ./tmp -I ./eval -I ./numbers -I ./poly
+
+# A disposable temporary directory, used for the build (created/deleted on demand).
+TMP_DIR=./hw_tmp
 
 # Default target for binaries (will create a new a directory alongside 'code').
 TARGET_DIR=../bin
@@ -33,7 +36,9 @@ TMP_FILE=$(TMP_DIR)/ntypes.h
 # The -Wall flag enforces good programing practice by tracking ambiugous/questionable code.
 # The -lm -lgmp -lmpfr are the 3 math libraries used by FPE (install GMP/MPFR first).
 # The -O3 optimization flag is best for production code.
-GCC_INCLUDE=$(shell find $(SOURCE_DIR) -type 'd' -not -name '.' | sed -e 's/^/-I /')
+GCC_LIBRARY_PATH=#-L./<pkg>/lib
+GCC_INCLUDE_PATH=#-I./<pkg>/include
+GCC_INCLUDE=${DIR_INCLUDE}
 GCC_OPTIONS=-Wall
 GCC_LIBRARIES=-lm -lgmp -lmpfr
 GCC_OPTIMIZATION=-O3
@@ -68,7 +73,7 @@ fpe: greetings
 	@echo "\nCompiling FastPolyEval from the current source code"
 	@mkdir -p $(TARGET_DIR)
 	@echo "The following binary will be generated: $(TARGET)\n"
-	gcc $(SOURCE_FILES) -o $(TARGET) $(GCC_INCLUDE) $(GCC_OPTIONS) $(GCC_LIBRARIES) $(GCC_OPTIMIZATION)
+	${CC} $(SOURCE_FILES) -o $(TARGET) ${GCC_INCLUDE_PATH} $(GCC_INCLUDE) $(GCC_OPTIONS) ${GCC_LIBRARY_PATH} $(GCC_LIBRARIES) $(GCC_OPTIMIZATION)
 
 hardware: greetings hw32 hw64 hw80
 
@@ -78,7 +83,7 @@ hw32:
 	@echo "The following binary will be generated: $(TARGET_FP32)\n"
 	@mkdir -p $(TMP_DIR)
 	@sed -e 's|^.*#define MACHINE_EXTRA_PREC|//#define MACHINE_EXTRA_PREC|; s|^.*#define MACHINE_LOW_PREC|#define MACHINE_LOW_PREC|' $(SOURCE_DIR)/numbers/ntypes.h > $(TMP_FILE) 2>&1
-	gcc $(SOURCE_FILES) -o $(TARGET_FP32) -I $(TMP_DIR) $(GCC_INCLUDE) $(GCC_OPTIONS) $(GCC_LIBRARIES) $(GCC_OPTIMIZATION)
+	${CC} $(SOURCE_FILES) -o $(TARGET_FP32) -I $(TMP_DIR) ${GCC_INCLUDE_PATH} $(GCC_INCLUDE) $(GCC_OPTIONS) ${GCC_LIBRARY_PATH} $(GCC_LIBRARIES) $(GCC_OPTIMIZATION)
 	@make hw_clean
 
 hw64:
@@ -87,7 +92,7 @@ hw64:
 	@echo "The following binary will be generated: $(TARGET_FP64)\n"
 	@mkdir -p $(TMP_DIR)
 	@sed -e 's|^.*#define MACHINE_EXTRA_PREC|//#define MACHINE_EXTRA_PREC|; s|^.*#define MACHINE_LOW_PREC|//#define MACHINE_LOW_PREC|' $(SOURCE_DIR)/numbers/ntypes.h > $(TMP_FILE) 2>&1
-	gcc $(SOURCE_FILES) -o $(TARGET_FP64) -I $(TMP_DIR) $(GCC_INCLUDE) $(GCC_OPTIONS) $(GCC_LIBRARIES) $(GCC_OPTIMIZATION)
+	${CC} $(SOURCE_FILES) -o $(TARGET_FP64) -I $(TMP_DIR) ${GCC_INCLUDE_PATH} $(GCC_INCLUDE) $(GCC_OPTIONS) ${GCC_LIBRARY_PATH} $(GCC_LIBRARIES) $(GCC_OPTIMIZATION)
 	@make hw_clean
 
 hw80:
@@ -96,7 +101,7 @@ hw80:
 	@echo "The following binary will be generated: $(TARGET_FP80)\n"
 	@mkdir -p $(TMP_DIR)
 	@sed -e 's|^.*#define MACHINE_EXTRA_PREC|#define MACHINE_EXTRA_PREC|; s|^.*#define MACHINE_LOW_PREC|//#define MACHINE_LOW_PREC|' $(SOURCE_DIR)/numbers/ntypes.h > $(TMP_FILE) 2>&1
-	gcc $(SOURCE_FILES) -o $(TARGET_FP80) -I $(TMP_DIR) $(GCC_INCLUDE) $(GCC_OPTIONS) $(GCC_LIBRARIES) $(GCC_OPTIMIZATION)
+	${CC} $(SOURCE_FILES) -o $(TARGET_FP80) -I $(TMP_DIR) ${GCC_INCLUDE_PATH} $(GCC_INCLUDE) $(GCC_OPTIONS) ${GCC_LIBRARY_PATH} $(GCC_LIBRARIES) $(GCC_OPTIMIZATION)
 	@make hw_clean
 
 hw_clean:

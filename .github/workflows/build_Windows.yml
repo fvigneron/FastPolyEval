@@ -1,31 +1,64 @@
-name: Windows Build
+name: Build Windows
 
 on:
 #  push:
 #    branches: [ "main" ] 
 #  pull_request:
 #    branches: [ "main" ]
+  # Called to create release.
+  workflow_call:
+    inputs:
+      config-path:
+        required: true
+        type: string
+    secrets:
+      token:
+        required: true
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: windows-latest
+  windows_build:
+    runs-on: ${{ matrix.platform.os }}-${{ matrix.platform.version }}
+    strategy:
+      matrix:
+        platform:
+          - os: windows
+            version: 2019
+            arch: x86_64
+            build: release
+            vcpkg_triplet: x64-windows-release
     steps:
+    - uses: actions/labeler@v4
+      if: ${{ github.event_name == 'workflow_call' }}
+      with:
+        repo-token: ${{ secrets.token }}
+        configuration-path: ${{ inputs.config-path }}
+
     - uses: actions/checkout@v3
-    - name: Install MPFR library (through vcpkg)
-      # For an untested pre-build alternative, see : http://www.atelierweb.com/mpir-and-mpfr/
-      run: |
-        mkdir C:\src\vcpkg
-        cd C:\src\vcpkg
-        git clone https://github.com/microsoft/vcpkg
-        .\vcpkg\bootstrap-vcpkg.bat
-        .\vcpkg\vcpkg install mpfr
-        dir C:\src\vcpkg\vcpkg\packages\
+
+    - name: Download and build MPFR dependencies (vcpkg).
+      uses: johnwason/vcpkg-action@v3
+      with:
+        pkgs: gmp mpfr
+        triplet: ${{ matrix.platform.vcpkg_triplet }}
+        cache-key: ${{ matrix.platform.os }}-${{ matrix.platform.version }}
+        revision: master
+
     - name: Build default app
-      run: make "GCC_LIBRARIES=-lm -L C:\src\vcpkg\vcpkg\packages\gmp_x86-windows\lib -L C:\src\vcpkg\vcpkg\packages\mpfr_x86-windows\lib -lgmp -lmpfr" fpe
+      run: make GCC_LIBRARY_PATH="-L ../vcpkg/packages/gmp_${{ matrix.platform.vcpkg_triplet }}/lib -L ../vcpkg/packages/mpfr_${{ matrix.platform.vcpkg_triplet }}/lib" GCC_INCLUDE_PATH="-I ../vcpkg/packages/gmp_${{ matrix.platform.vcpkg_triplet }}/include -I ../vcpkg/packages/mpfr_${{ matrix.platform.vcpkg_triplet }}/include" fpe
       working-directory: code
+
     - name: List the binaries that where build
       run: ls -l ./bin
+
     - name: Basic test (dry run)
       run: ./bin/FastPolyEval -help || true
-    
+
+    - name: Upload archive
+      uses: actions/upload-artifact@v3
+      with:
+        name: FastPolyEval_${{ matrix.platform.arch }}_${{ matrix.platform.os }}
+        path: ./bin/FastPolyEval*
+    #- name: Cleanup
+    #  run: make clean
+    #  working-directory: code

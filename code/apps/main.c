@@ -12,6 +12,10 @@
 //  Copyright 2022 Univ. Paris-Est Créteil & Univ. de Reims Champagne-Ardenne.
 //
 
+#if defined(_WIN32) || defined(__CYGWIN__)
+#include <windows.h>
+#endif
+
 #include <stdio.h>
 #include <string.h>
 
