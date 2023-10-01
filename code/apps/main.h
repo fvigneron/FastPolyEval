@@ -19,6 +19,7 @@
  
  This documentation is availlable online at https://fvigneron.github.io/FastPolyEval.
  It also exists in PDF form: [FastPolyEval_doc.pdf](https://fvigneron.github.io/FastPolyEval/FastPolyEval_doc.pdf).
+ The source code can be found on [GitHub](https://github.com/fvigneron/FastPolyEval/).
 
  \section sectIntro Abstract
  <b> @c FastPolyEval is a library, written in C, that aims at evaluating polynomials very efficiently, without compromising the accuracy of the result.
