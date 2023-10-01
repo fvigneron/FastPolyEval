@@ -80,6 +80,7 @@ hardware: greetings hw32 hw64 hw80
 hw32:
 	@echo "----------------------------------------------------------------------------\n"
 	@echo "\nCompiling a version of $(TARGET_NAME) with FP32 machine numbers"
+	@mkdir -p $(TARGET_DIR)
 	@echo "The following binary will be generated: $(TARGET_FP32)\n"
 	@mkdir -p $(TMP_DIR)
 	@sed -e 's|^.*#define MACHINE_EXTRA_PREC|//#define MACHINE_EXTRA_PREC|; s|^.*#define MACHINE_LOW_PREC|#define MACHINE_LOW_PREC|' $(SOURCE_DIR)/numbers/ntypes.h > $(TMP_FILE) 2>&1
@@ -89,6 +90,7 @@ hw32:
 hw64:
 	@echo "----------------------------------------------------------------------------\n"
 	@echo "\nCompiling a version of $(TARGET_NAME) with FP64 machine numbers"
+	@mkdir -p $(TARGET_DIR)
 	@echo "The following binary will be generated: $(TARGET_FP64)\n"
 	@mkdir -p $(TMP_DIR)
 	@sed -e 's|^.*#define MACHINE_EXTRA_PREC|//#define MACHINE_EXTRA_PREC|; s|^.*#define MACHINE_LOW_PREC|//#define MACHINE_LOW_PREC|' $(SOURCE_DIR)/numbers/ntypes.h > $(TMP_FILE) 2>&1
@@ -98,6 +100,7 @@ hw64:
 hw80:
 	@echo "----------------------------------------------------------------------------\n"
 	@echo "\nCompiling a version of $(TARGET_NAME) with FP80 machine numbers"
+	@mkdir -p $(TARGET_DIR)
 	@echo "The following binary will be generated: $(TARGET_FP80)\n"
 	@mkdir -p $(TMP_DIR)
 	@sed -e 's|^.*#define MACHINE_EXTRA_PREC|#define MACHINE_EXTRA_PREC|; s|^.*#define MACHINE_LOW_PREC|//#define MACHINE_LOW_PREC|' $(SOURCE_DIR)/numbers/ntypes.h > $(TMP_FILE) 2>&1
