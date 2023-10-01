@@ -1,6 +1,8 @@
 # FastPolyEval : a Fast Polynomial Evaluator
 
-FastPolyEval is a library, written in C, that aims at evaluating polynomials very efficiently, without compromising the accuracy of the result. It is based on the FPE algorithm introduced in [this article](https://hal.archives-ouvertes.fr/hal-03820369). The documentation is availlable on the project's website: https://fvigneron.github.io/FastPolyEval.
+FastPolyEval is a library, written in C, that aims at evaluating polynomials very efficiently, without compromising the accuracy of the result. It is based on the FPE algorithm introduced in [this article](https://hal.archives-ouvertes.fr/hal-03820369). The documentation is availlable on the project's website:
+
+https://fvigneron.github.io/FastPolyEval
 
 In FastPolyEval, the computations are done for real or complex numbers, in floating point arithmetic, with a fixed precision, which can be one of the machine types [FP32](https://en.wikipedia.org/wiki/Single-precision_floating-point_format),
 [FP64](https://en.wikipedia.org/wiki/Double-precision_floating-point_format),
