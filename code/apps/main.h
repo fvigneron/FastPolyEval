@@ -507,6 +507,7 @@
     use or distribute this software:
     R. Anton, N. Mihalache & F. Vigneron.
     Fast evaluation of real and complex polynomials. 2022.
+    [[arxiv-2211.06320](https://arxiv.org/abs/2211.06320)] or
     [[hal-03820369](https://hal.archives-ouvertes.fr/hal-03820369)]'
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
