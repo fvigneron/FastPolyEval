@@ -13,5 +13,5 @@ It is possible to compile a version of the code that uses hardware arithmetic at
 For now, the MPFR library is included by default, even if you inted to use only FP80 arithmetic.
 
 We welcome the idea of using alternative libraries for high-precision arithmetic, in particular if your
-favorite library works on GPU or mixed CPU/GPU environment. If you are interested, please contact us
-so we can discuss evolving our software accordingly.
+favorite library works on GPU or mixed CPU/GPU environment. If you are interested, please contact me
+(<francois.vigneron@univ-reims.fr>) so we can discuss evolving our software accordingly :wink:.
