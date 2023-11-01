@@ -12,6 +12,7 @@ PREC=$1
 PTS=$2
 RADIUS=$3
 FastPolyEval="UNDEFINED"
+#FastPolyEval="$HOME/FPE_Demo/bin/FastPolyEval"
 
 if [[ "$FastPolyEval" =~ "UNDEFINED" ]]; then
     echo "Please update the FastPolyEval variable in this script."
