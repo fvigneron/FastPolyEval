@@ -40,6 +40,7 @@ function comment(){ ## display a comment
 ## ----------------------------------------------------------------
 
 TGT="$HOME/FPE_Demo"
+DEMODIR="$TGT/demo_tmp"
 
 ## Clone the repository into TGT
 echo "FPE live demo will take place in $TGT."
@@ -97,9 +98,9 @@ PATH="$PATH:$TGT/bin"
 echo
 
 ## First contact
-shell mkdir "$TGT/demo"
-shell cd "$TGT/demo"
-mkdir -p "$TGT/demo" && cd "$TGT/demo" ## streamline shell commands
+shell mkdir "$DEMODIR"
+shell cd "$DEMODIR"
+mkdir -p "$DEMODIR" && cd "$DEMODIR" ## streamline shell commands
 echo
 comment 'First contact'
 prompt FastPolyEval
