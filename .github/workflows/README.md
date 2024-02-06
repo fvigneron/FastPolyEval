@@ -1,4 +1,4 @@
-Github workflows
+# Github workflows
 
 Github offers access to virtual machines that run on their servers. 
 This directory contains the corresponding tasks, called [workflows](https://docs.github.com/en/actions/using-workflows).
